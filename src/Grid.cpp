@@ -6,8 +6,8 @@ Grid::Grid(u32 size){
     
     for(i32 i = 0; i <= size; i++){
         for(i32 j = 0; j <= size; j++){
-            float x  = (float)j;
-            float y  = (float)i;
+            float x  = (float)j - size/2.0;
+            float y  = (float)i - size/2.0;
 
             vertices.push_back(x);
             vertices.push_back(0);

@@ -83,3 +83,11 @@ SDL_Event Window::GetEvent(){
 void Window::Quit(){
     quit = true;
 }
+
+SDL_Window* Window::GetWindow(){
+    return window;
+}
+
+SDL_GLContext Window::GetGLContext(){
+    return glContext;
+}

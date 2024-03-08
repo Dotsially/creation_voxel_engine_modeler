@@ -23,4 +23,6 @@ class Window{
     void Update(bool centeredMouse);
 
     SDL_Event GetEvent();
+    SDL_GLContext GetGLContext();
+    SDL_Window* GetWindow();
 };
