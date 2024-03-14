@@ -1,2 +1,2 @@
-g++ -O1 src/*.cpp src_dependecies/*.c imgui/*cpp -o bin/editor.exe -Wall -Wno-missing-braces -I include/. -I header/. -I imgui/. -L lib -lSDL2 -lSDL2main -lopengl32 -lgdi32 -llua54 -lwinmm -lws2_32 -luser32 -lshell32
+g++ -O1 src/*.cpp src_dependecies/*.c imgui/*cpp -o bin/editor.exe -Wall -Wno-missing-braces -I include/. -I header/. -I imgui/. -L lib -lSDL2 -lSDL2main -lopengl32 -lgdi32 -lwinmm -lws2_32 -luser32 -lshell32
 bin\editor.exe

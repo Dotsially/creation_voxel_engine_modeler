@@ -9,7 +9,8 @@
 #include "mesh.h"
 #include "shader.h"
 #include "grid.h"
-#include "cube.h"
+#include "node.h"
+#include "animator.h"
 
 void InputHandler(Window* gameWindow, const u8* keystate);
 
@@ -27,30 +28,66 @@ int main(int argc, char* args[]){
     ImGui_ImplSDL2_InitForOpenGL(editorWindow.GetWindow() ,editorWindow.GetGLContext());
     ImGui_ImplOpenGL3_Init("#version 130");
 
-
     Shader gridShader = Shader("grid_vertex.glsl", "grid_fragment.glsl");
     Shader cubeShader = Shader("cube_vertex.glsl", "cube_fragment.glsl");
     Camera viewport = Camera(glm::vec3{0});
 
-    Grid grid = Grid(11);
-    Cube cube = Cube(glm::vec3{0,0,0});
-    bool show_demo_window = true;
+    Grid grid = Grid(16);
+    
+    glm::fvec3 selectPosition = glm::vec3{0};
+    glm::fvec3 selectRotation = glm::vec3{0};
+    glm::fvec3 selectSize = glm::vec3{1};
+    glm::fvec3 selectPivot = glm::vec3{0};
 
+    Node nodes;
+    Animator animator = Animator(30, 60);
+
+
+    
     while(!editorWindow.WindowShouldClose()){
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow(&show_demo_window);
+        
+        ImGui::ShowIDStackToolWindow();
+
+        ImGui::Begin("Hierachy");
+            ImGui::DragFloat3("Translation", glm::value_ptr(selectPosition), 1);
+            ImGui::DragFloat3("Rotation", glm::value_ptr(selectRotation),1, -360, 360);
+            ImGui::DragFloat3("Size", glm::value_ptr(selectSize),0.5);
+            
+            ImGui::DragFloat3("Pivot", glm::value_ptr(selectPivot),0.5);
+
+            ImGui::SameLine();
+            if(ImGui::Button("Center")){
+                nodes.CenterCube();
+            }
+
+            if(ImGui::Button("Cube")){
+                nodes.AddCube();
+            } ImGui::SameLine();
+            if(ImGui::Button("Bone")){
+                nodes.AddBone();
+            } ImGui::SameLine();
+            if(ImGui::Button("Delete")){
+                nodes.DeleteNode();
+            }
+
+            nodes.SetupNodeUI(&selectPosition, &selectRotation, &selectSize, &selectPivot);
+			
+        ImGui::End();
+
+        nodes.Update(selectPosition, selectRotation, selectSize, selectPivot);
+        animator.SetupAnimatorUI();
 
         editorWindow.PollEvents();
         const u8* keystate = SDL_GetKeyboardState(NULL); 
         InputHandler(&editorWindow, keystate);
         
         viewport.Update(keystate, glm::vec3{0,0,0});
+
         glm::mat4 perspective = viewport.GetProjectMatrix();
         glm::mat4 view = viewport.GetViewMatrix();
-        
         
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.1,0.1,0.1,1.0);  
@@ -61,9 +98,9 @@ int main(int argc, char* args[]){
         grid.Draw();
 
         cubeShader.UseProgram();
-            glUniformMatrix4fv(0, 1, false, glm::value_ptr(perspective));
+            glUniformMatrix4fv(0, 1, false, glm::value_ptr	(perspective));
             glUniformMatrix4fv(1, 1, false, glm::value_ptr(view));
-        cube.Draw();
+        nodes.Draw();
 
         ImGui::Render();
         
@@ -71,7 +108,11 @@ int main(int argc, char* args[]){
 
         editorWindow.SwapBuffers();
     }
+    
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     return 0;
 }
 

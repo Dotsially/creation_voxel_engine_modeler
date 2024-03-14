@@ -4,8 +4,8 @@
 Grid::Grid(u32 size){
     this->size = size;
     
-    for(i32 i = 0; i <= size; i++){
-        for(i32 j = 0; j <= size; j++){
+    for(u32 i = 0; i <= size; i++){
+        for(u32 j = 0; j <= size; j++){
             float x  = (float)j - size/2.0;
             float y  = (float)i - size/2.0;
 
@@ -16,8 +16,8 @@ Grid::Grid(u32 size){
     }
 
 
-    for(i32 i = 0; i < size; i++){
-        for(i32 j = 0; j < size; j++){
+    for(u32 i = 0; i < size; i++){
+        for(u32 j = 0; j < size; j++){
             i32 row1 = i * (size+1);
             i32 row2 = (i+1) * (size+1);
             
@@ -37,8 +37,8 @@ Grid::Grid(u32 size){
     mesh.AddAttribute(3, 3, 0);
 }
 
-Grid::~Grid(){
-
+Grid::~Grid(){ 
+    mesh.DestroyMesh();
 }
 
 void Grid::Draw(){

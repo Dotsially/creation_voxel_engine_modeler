@@ -19,6 +19,7 @@ public:
     ~Mesh();
 
     void InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
+    void DestroyMesh();
     void AddAttribute(i32 dataSize, i32 stride, i32 offset);
     void SendData(f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize);
 

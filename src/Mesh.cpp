@@ -1,22 +1,26 @@
 #include "mesh.h"
 #include <iostream>
 
-
 Mesh::Mesh(){
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vboInstanced);
+
 }
 
-Mesh::~Mesh(){ 
+Mesh::~Mesh(){
+
+}
+
+void Mesh::DestroyMesh(){
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     glDeleteVertexArrays(1, &vao);
 }
 
-
 void Mesh::InitializeMesh(i32 drawType, f32* verticesData, i32 verticesDataSize, u32* indicesData, i32 indicesDataSize){
+    glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vboInstanced);
+    
     this->drawType = drawType;
     glBindVertexArray(vao);
 
