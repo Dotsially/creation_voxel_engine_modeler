@@ -20,8 +20,12 @@ public:
 	void SetupNodeUI(glm::vec3* position, glm::vec3* rotation, glm::vec3* size, glm::vec3* pivot);
 	void AddBone();
 	void AddCube();
+	void AddNode(std::string nodeName, NodeItem item);
 	void DeleteNode();
+	void ClearNode();
 	void CenterCube();
 	void Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 size, glm::vec3 pivot);
 	void Draw();
+
+	std::map<std::string, NodeItem>* GetItems();
 };

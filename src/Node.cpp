@@ -75,6 +75,18 @@ void Node::AddCube(){
     cubeMeshes[cubeIndex].InitializeMesh(items[cubeIndex].GetSize());
 }
 
+void Node::AddNode(std::string nodeName, NodeItem item){
+    items[nodeName] = item;
+    if(items[nodeName].isBone){
+        boneSize++;
+    }else{
+        cubeSize++;
+        CubeMesh mesh;
+        cubeMeshes[nodeName] = mesh;
+        cubeMeshes[nodeName].InitializeMesh(items[nodeName].GetSize());
+    }
+}
+
 void Node::DeleteNode(){
     if(items.count(nodeSelected)){
         if(!items[nodeSelected].isBone){
@@ -91,6 +103,12 @@ void Node::DeleteNode(){
     nodeSelected = "";
 }
 
+void Node::ClearNode(){
+    items.clear();
+    cubeMeshes.clear();
+    nodeSelected = "";
+}
+
 void Node::Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 size, glm::vec3 pivot){
     if(items.count(nodeSelected)){
         items[nodeSelected].Update(position, rotation, size, pivot);
@@ -104,4 +122,10 @@ void Node::Draw(){
     for (auto mesh = cubeMeshes.begin(); mesh != cubeMeshes.end(); mesh++){
         mesh->second.Draw(items[mesh->first].GetTransform());
     }
+}
+
+
+
+std::map<std::string, NodeItem>* Node::GetItems(){
+    return &items;
 }

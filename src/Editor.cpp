@@ -11,6 +11,7 @@
 #include "grid.h"
 #include "node.h"
 #include "animator.h"
+#include "sekai_reader.h"
 
 void InputHandler(Window* gameWindow, const u8* keystate);
 
@@ -28,6 +29,7 @@ int main(int argc, char* args[]){
     ImGui_ImplSDL2_InitForOpenGL(editorWindow.GetWindow() ,editorWindow.GetGLContext());
     ImGui_ImplOpenGL3_Init("#version 130");
 
+    SekaiReader sekaiReader;
     Shader gridShader = Shader("grid_vertex.glsl", "grid_fragment.glsl");
     Shader cubeShader = Shader("cube_vertex.glsl", "cube_fragment.glsl");
     Camera viewport = Camera(glm::vec3{0});
@@ -52,6 +54,12 @@ int main(int argc, char* args[]){
         ImGui::ShowIDStackToolWindow();
 
         ImGui::Begin("Hierachy");
+            if(ImGui::Button("Save")){
+                sekaiReader.SaveModel(nodes.GetItems());
+            } ImGui::SameLine();
+            if(ImGui::Button("Load")){
+                sekaiReader.LoadModel(&nodes, "model.json");
+            }  
             ImGui::DragFloat3("Translation", glm::value_ptr(selectPosition), 1);
             ImGui::DragFloat3("Rotation", glm::value_ptr(selectRotation),1, -360, 360);
             ImGui::DragFloat3("Size", glm::value_ptr(selectSize),0.5);
