@@ -2,7 +2,7 @@
 #include <iostream>
 
 Mesh::Mesh(){
-
+    
 }
 
 Mesh::~Mesh(){
@@ -101,6 +101,17 @@ void Mesh::DrawMesh(i32 mode, i32 indicesSize){
 }
 
 
+void Mesh::DrawMeshBaseVertex(i32 mode, BaseVertexData* baseVertex){
+    glBindVertexArray(vao);
+    glDrawElementsBaseVertex(mode, baseVertex->count, GL_UNSIGNED_INT, (void*)baseVertex->offset, baseVertex->baseVertex);
+    glBindVertexArray(0);
+}
+
+void Mesh::MultiDrawElementsIndirect(i32 mode){
+    glBindVertexArray(vao);
+    //glMultiDrawElementsBaseVertex(mode, counts.data(), GL_UNSIGNED_INT, offsets.data(), drawCount , baseVertices.data());
+    glBindVertexArray(0);
+}
 
 void Mesh::DrawInstancedMesh(i32 indicesSize, i32 instances){
     glBindVertexArray(vao);

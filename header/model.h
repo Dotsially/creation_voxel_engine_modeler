@@ -1,16 +1,56 @@
 #pragma once
 #include "depedencies.h"
-#include "bone.h"
-#include "cube.h"
+#include "vertices_list.h"
+#include "mesh.h"
+#include "node_item.h"
+#include <vector>
 #include <map>
 #include <string>
 
-class Model{
-    std::map<std::string, Bone> bones;
-    std::map<std::string, Cube> cubes;
-public:
+typedef struct CustomBlockModelData{
+    glm::vec3 size;
+    glm::mat4 transform;
+} CustomBlockModelData;
 
-    void AddBone();
-    void AddCube();
-    void DrawCubes();
+typedef struct EntityModelData{
+    glm::vec3 size;
+    glm::mat4 transform;
+    BaseVertexData meshData;
+} EntityModelData;
+
+//TODO
+class CustomBlockModel{
+    std::vector<f32> vertices;
+    std::vector<u32> indices;
+    std::map<std::string, CustomBlockModelData> modelData;
+
+    Mesh mesh;
+    u8 intialized;
+    
+    void Generate();
+public:
+    void AddMesh(glm::vec3 size);
+    void InitializeMesh();
+    void DestroyMesh();
+    void Update(glm::vec3 size);
+    void Draw(glm::mat4);
+};
+
+class EntityModel{
+    std::vector<f32> vertices;
+    std::vector<u32> indices;
+    std::map<std::string, EntityModelData> modelData;
+    Mesh mesh;
+    u8 intialized;
+    u32 meshCount = 0;
+    
+    void Generate();
+public:
+    void AddMesh(std::string meshID, NodeItem* meshData);
+    void DeleteMesh(std::string meshID);
+    void InitializeMesh();
+    void DestroyModel();
+    void Update(std::string meshID, NodeItem* meshData);
+    void Clear();
+    void Draw();
 };

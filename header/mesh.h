@@ -6,6 +6,11 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <vector>
 
+typedef struct BaseVertexData{
+    u32 count;
+    u32 offset;
+    u32 baseVertex;
+} BaseVertexData;
 
 class Mesh{
     u32 vao;
@@ -28,5 +33,7 @@ public:
     void SendInstanceData(i32 drawType, f32* verticesData, i32 verticesDataSize);
 
     void DrawMesh(i32 mode, i32 indiceSize);
+    void DrawMeshBaseVertex(i32 mode, BaseVertexData* baseVertex);
+    void MultiDrawElementsIndirect(i32 mode);
     void DrawInstancedMesh(i32 indicesSize, i32 instances);
 };

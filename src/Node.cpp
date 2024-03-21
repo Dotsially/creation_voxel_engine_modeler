@@ -5,9 +5,7 @@ Node::Node(){
 }
 
 Node::~Node(){
-    for (auto mesh = cubeMeshes.begin(); mesh != cubeMeshes.end(); mesh++){
-        mesh->second.DestroyMesh();
-    }
+    model.DestroyModel();
 }
 
 void Node::SetupNodeUI(glm::vec3* position, glm::vec3* rotation, glm::vec3* size, glm::vec3* pivot){
@@ -49,7 +47,7 @@ void Node::AddBone(){
     std::string boneIndex = "Bone " + std::to_string(boneSize);
     while(items.count(boneIndex)){
         boneSize++;
-        boneIndex = "Cube " + std::to_string(boneSize);
+        boneIndex = "Bone " + std::to_string(boneSize);
     }
     items[boneIndex].Initialize(NULL, 1);
     boneSize++;
@@ -70,9 +68,7 @@ void Node::AddCube(){
     items[cubeIndex].Initialize(NULL, 0);
     cubeSize++;
 
-    CubeMesh mesh;
-    cubeMeshes[cubeIndex] = mesh;
-    cubeMeshes[cubeIndex].InitializeMesh(items[cubeIndex].GetSize());
+    model.AddMesh(cubeIndex, &items[cubeIndex]);
 }
 
 void Node::AddNode(std::string nodeName, NodeItem item){
@@ -81,31 +77,27 @@ void Node::AddNode(std::string nodeName, NodeItem item){
         boneSize++;
     }else{
         cubeSize++;
-        CubeMesh mesh;
-        cubeMeshes[nodeName] = mesh;
-        cubeMeshes[nodeName].InitializeMesh(items[nodeName].GetSize());
+        model.AddMesh(nodeName, &items[nodeName]);
     }
 }
 
 void Node::DeleteNode(){
     if(items.count(nodeSelected)){
         if(!items[nodeSelected].isBone){
-            cubeMeshes[nodeSelected].DestroyMesh();
-            cubeMeshes.erase(nodeSelected);
+            model.DeleteMesh(nodeSelected);
             cubeSize--;
         }else{
             boneSize--;
         }
 
         items.erase(nodeSelected);    
-        
     }
     nodeSelected = "";
 }
 
 void Node::ClearNode(){
     items.clear();
-    cubeMeshes.clear();
+    model.Clear();
     nodeSelected = "";
 }
 
@@ -113,15 +105,13 @@ void Node::Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 size, glm::v
     if(items.count(nodeSelected)){
         items[nodeSelected].Update(position, rotation, size, pivot);
         if(!items[nodeSelected].isBone){
-            cubeMeshes[nodeSelected].Update(items[nodeSelected].GetSize());
+            model.Update(nodeSelected, &items[nodeSelected]);
         }
     }
 }
 
 void Node::Draw(){
-    for (auto mesh = cubeMeshes.begin(); mesh != cubeMeshes.end(); mesh++){
-        mesh->second.Draw(items[mesh->first].GetTransform());
-    }
+    model.Draw();
 }
 
 

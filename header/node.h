@@ -2,7 +2,7 @@
 #include "depedencies.h"
 #include "imgui.h"
 #include "node_item.h"
-#include "cube_mesh.h"
+#include "model.h"
 #include <map>
 #include <string>
 
@@ -12,7 +12,7 @@ private:
 	u16 boneSize = 0;
 	u16 cubeSize = 0;
 	
-    std::map<std::string, CubeMesh> cubeMeshes;
+    EntityModel model;
 	std::string nodeSelected = "";
 public:
 	Node();
