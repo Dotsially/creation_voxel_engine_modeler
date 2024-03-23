@@ -20,11 +20,13 @@ class Camera{
     f32 fov;
     f32 yaw;
     f32 pitch;
+    f32 targetDistance = 12.0f;
 
 public:
     Camera(glm::vec3 position);
     ~Camera();
     void Update(const u8* keystate, glm::vec3 targetPosition);
+    void UpdateTargetDistance(i32 y);
     glm::mat4 GetProjectMatrix();
     glm::mat4 GetViewMatrix();
     glm::vec3 GetPosition();

@@ -107,6 +107,22 @@ void Mesh::DrawMeshBaseVertex(i32 mode, BaseVertexData* baseVertex){
     glBindVertexArray(0);
 }
 
+void Mesh::DrawMeshMultiBaseVertex(i32 mode, i32 drawCount, BaseVertexData* baseVertex){
+    std::vector<GLsizei> counts;
+    std::vector<void*> offsets;
+    std::vector<GLint> baseVertices;
+
+    for(int i = 0; i < drawCount; i++){
+        counts.push_back(baseVertex[i].count);
+        offsets.push_back(reinterpret_cast<void*>(baseVertex[i].offset));
+        baseVertices.push_back(baseVertex[i].baseVertex);
+    }
+    
+    glBindVertexArray(vao);
+    glMultiDrawElementsBaseVertex(mode, counts.data(), GL_UNSIGNED_INT, offsets.data(), drawCount, baseVertices.data());
+    glBindVertexArray(0);
+}
+
 void Mesh::MultiDrawElementsIndirect(i32 mode){
     glBindVertexArray(vao);
     //glMultiDrawElementsBaseVertex(mode, counts.data(), GL_UNSIGNED_INT, offsets.data(), drawCount , baseVertices.data());

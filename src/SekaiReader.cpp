@@ -48,7 +48,7 @@ void SekaiReader::LoadModel(Node* node, std::string fileName){
     for(auto it = model["items"].begin(); it != model["items"].end(); ++it){
         json data = it.value();
         NodeItem nodeItem;
-        nodeItem.Initialize(NULL, data["is_bone"]);
+        nodeItem.Initialize(data["is_bone"]);
         
         glm::vec3 position = glm::vec3{data["position"][0], data["position"][1], data["position"][2]};
         glm::vec3 rotation = glm::vec3{data["rotation"][0], data["rotation"][1], data["rotation"][2]};

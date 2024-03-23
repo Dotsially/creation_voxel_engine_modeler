@@ -34,6 +34,7 @@ public:
 
     void DrawMesh(i32 mode, i32 indiceSize);
     void DrawMeshBaseVertex(i32 mode, BaseVertexData* baseVertex);
+    void DrawMeshMultiBaseVertex(i32 mode, i32 drawCount, BaseVertexData* baseVertex);
     void MultiDrawElementsIndirect(i32 mode);
     void DrawInstancedMesh(i32 indicesSize, i32 instances);
 };

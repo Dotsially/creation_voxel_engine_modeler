@@ -7,7 +7,7 @@ void EntityModel::InitializeMesh(){
 }
 
 void EntityModel::AddMesh(std::string meshID, NodeItem* meshData){
-    
+    meshCount++;
     EntityModelData data;
     data.size = meshData->GetSize();
     data.transform = meshData->GetTransform();
@@ -25,6 +25,7 @@ void EntityModel::AddMesh(std::string meshID, NodeItem* meshData){
 }
 
 void EntityModel::DeleteMesh(std::string meshID){
+    meshCount--;
     modelData.erase(meshID);
     Generate();
     mesh.SendData(vertices.data(), vertices.size(), indices.data(), indices.size());
@@ -72,7 +73,7 @@ void EntityModel::Update(std::string meshID, NodeItem* meshData){
     modelData[meshID].size = meshData->GetSize();
     modelData[meshID].transform = meshData->GetTransform();
     if(oldSize != modelData[meshID].size){
-        Generate();
+        Generate(); 
         mesh.SendData(vertices.data(), vertices.size(), indices.data(), indices.size());
     }
 }
@@ -82,8 +83,14 @@ void EntityModel::Clear(){
 }
 
 void EntityModel::Draw(){
+    std::vector<BaseVertexData> meshData;
+    std::vector<glm::mat4> transforms;
     for (auto data = modelData.begin(); data != modelData.end(); data++){
-        glUniformMatrix4fv(2, 1, false, glm::value_ptr(data->second.transform));
-        mesh.DrawMeshBaseVertex(GL_TRIANGLES, &data->second.meshData);
+        meshData.push_back(data->second.meshData);
+        transforms.push_back(data->second.transform);
     }
+
+    glUniformMatrix4fv(2, transforms.size(), false, glm::value_ptr(transforms[0]));
+    mesh.DrawMeshMultiBaseVertex(GL_TRIANGLES, meshCount, meshData.data());
 }
+

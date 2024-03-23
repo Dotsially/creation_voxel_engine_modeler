@@ -13,29 +13,45 @@ void Node::SetupNodeUI(glm::vec3* position, glm::vec3* rotation, glm::vec3* size
     if(ImGui::TreeNode("Items")){
         for (auto i = items.begin(); i != items.end(); i++){
             ImGuiTreeNodeFlags nodeFlags = 0;
-            nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+            nodeFlags |= ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
             if(i->first == nodeSelected){
                 nodeFlags |= ImGuiTreeNodeFlags_Selected;
             }
-            if(i->second.isBone){
-                ImGui::TreeNodeEx((void*)(int*)count, nodeFlags, i->first.c_str());
-                if(ImGui::IsItemClicked()){
-                    nodeSelected = i->first;
-                    *position = glm::vec3{0};
-                    *size = glm::vec3{0};
-                    *rotation = items[nodeSelected].GetRotation();
-                    *pivot = items[nodeSelected].GetPivot();
+                if(i->second.isBone){
+                    u8 bone_open = ImGui::TreeNodeEx((void*)(int*)count, nodeFlags, i->first.c_str());
+                    if(ImGui::IsItemClicked()){
+                        nodeSelected = i->first;
+                        *position = glm::vec3{0};
+                        *size = glm::vec3{0};
+                        *rotation = items[nodeSelected].GetRotation();
+                        *pivot = items[nodeSelected].GetPivot();
+                    }
+                    if(ImGui::BeginDragDropSource()){
+                        ImGui::SetDragDropPayload("_TREENODE", NULL, 0);
+                        std::string dragText = "Node being dragged: " + nodeSelected;
+                        ImGui::Text(dragText.c_str());
+                        ImGui::EndDragDropSource();
+                    }
+                    if(bone_open){   
+                        ImGui::TreePop();
+                    }
+                }else{
+                    nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                    ImGui::TreeNodeEx((void*)(int*)count, nodeFlags, i->first.c_str());
+                    if(ImGui::IsItemClicked()){
+                        nodeSelected = i->first;
+                        *position = items[nodeSelected].GetPosition();
+                        *rotation = items[nodeSelected].GetRotation();
+                        *size = items[nodeSelected].GetSize();
+                        *pivot = items[nodeSelected].GetPivot();
+                    }
+                    if(ImGui::BeginDragDropSource()){
+                        ImGui::SetDragDropPayload("_TREENODE", NULL, 0);
+                        std::string dragText = "Node being dragged: " + nodeSelected;
+                        ImGui::Text(dragText.c_str());
+                        ImGui::EndDragDropSource();
+                    }
                 }
-            }else{
-                ImGui::TreeNodeEx((void*)(int*)count, nodeFlags, i->first.c_str());
-                if(ImGui::IsItemClicked()){
-                    nodeSelected = i->first;
-                    *position = items[nodeSelected].GetPosition();
-                    *rotation = items[nodeSelected].GetRotation();
-                    *size = items[nodeSelected].GetSize();
-                    *pivot = items[nodeSelected].GetPivot();
-                }
-            }
             count++;
         }   	
 		ImGui::TreePop();
@@ -49,13 +65,14 @@ void Node::AddBone(){
         boneSize++;
         boneIndex = "Bone " + std::to_string(boneSize);
     }
-    items[boneIndex].Initialize(NULL, 1);
+    items[boneIndex].Initialize(1);
     boneSize++;
 }
 
-void Node::CenterCube(){
+void Node::CenterCube(glm::vec3* pivot){
     if(!items[nodeSelected].isBone){
         items[nodeSelected].CenterPivot();
+        *pivot = items[nodeSelected].GetPivot();
     }
 }
 
@@ -65,7 +82,7 @@ void Node::AddCube(){
         cubeSize++;
         cubeIndex = "Cube " + std::to_string(cubeSize);
     }
-    items[cubeIndex].Initialize(NULL, 0);
+    items[cubeIndex].Initialize(0);
     cubeSize++;
 
     model.AddMesh(cubeIndex, &items[cubeIndex]);

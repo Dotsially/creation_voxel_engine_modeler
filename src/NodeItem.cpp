@@ -1,24 +1,10 @@
 #include "node_item.h"
 
 
-void NodeItem::Initialize(NodeItem* parent, u8 isBone){
-        if(parent != NULL){
-        this->parent = parent;
-    }
-
+void NodeItem::Initialize(u8 isBone){
     this->isBone = isBone;
 
-    if(parent != NULL){
-        transform = parent->GetTransform();
-        transform = glm::translate(transform, pivot);
-    }
-    else{
-        transform = glm::translate(glm::mat4(1.0), pivot);
-    }
-    transform = glm::rotate(transform, glm::radians(this->rotation.x), glm::vec3{1, 0, 0});
-    transform = glm::rotate(transform, glm::radians(this->rotation.y), glm::vec3{0, 1, 0});
-    transform = glm::rotate(transform, glm::radians(this->rotation.z), glm::vec3{0, 0, 1});
-    transform = glm::translate(transform, this->position - this->pivot);
+    CalculateTransform();
 }
 
 void NodeItem::Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 size, glm::vec3 pivot){
@@ -32,17 +18,7 @@ void NodeItem::Update(glm::vec3 position, glm::vec3 rotation, glm::vec3 size, gl
         this->pivot = pivot;
     }
     
-    if(parent != NULL){
-        transform = parent->GetTransform();
-        transform = glm::translate(transform, pivot);
-    }
-    else{
-        transform = glm::translate(glm::mat4(1.0), pivot);
-    }
-    transform = glm::rotate(transform, glm::radians(this->rotation.x), glm::vec3{1, 0, 0});
-    transform = glm::rotate(transform, glm::radians(this->rotation.y), glm::vec3{0, 1, 0});
-    transform = glm::rotate(transform, glm::radians(this->rotation.z), glm::vec3{0, 0, 1});
-    transform = glm::translate(transform, this->position - this->pivot);
+    CalculateTransform();
 }
 
 void NodeItem::CenterPivot(){
@@ -67,4 +43,26 @@ glm::vec3 NodeItem::GetRotation(){
 
 glm::mat4 NodeItem::GetTransform(){
     return transform;
+}
+
+void NodeItem::CalculateTransform(){
+    if(parent != NULL){
+        transform = parent->GetTransform();
+        transform = glm::translate(transform, pivot);
+    }
+    else{
+        transform = glm::translate(glm::mat4(1.0), pivot);
+    }
+
+    transform = glm::rotate(transform, glm::radians(this->rotation.x), glm::vec3{1, 0, 0});
+    transform = glm::rotate(transform, glm::radians(this->rotation.y), glm::vec3{0, 1, 0});
+    transform = glm::rotate(transform, glm::radians(this->rotation.z), glm::vec3{0, 0, 1});
+    transform = glm::translate(transform, this->position - this->pivot);
+}   
+
+u8 NodeItem::HasParent(){
+    if(parent == NULL){
+        return 0;
+    }
+    return 1;
 }

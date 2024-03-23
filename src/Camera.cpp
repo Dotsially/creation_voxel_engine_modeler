@@ -29,16 +29,23 @@ void Camera::Update(const u8* keystate, glm::vec3 targetPosition){
     {
         angle.y = glm::radians(-89.0f);
     }
-    
-    position.x = - (sinf(angle.x) * 12.0 * cosf(angle.y) + target.x);
-    position.y = ((angle.y <= 0.0f)? 1 : -1) * sinf(angle.y) * 12.0 * sinf(angle.y) + target.y;
-    position.z =  - (cosf(angle.x) * 12.0 * cosf(angle.y) + target.z);
 
     target = targetPosition;
+    
+    position.x = - (sinf(angle.x) * targetDistance * cosf(angle.y) + target.x);
+    position.y = ((angle.y <= 0.0f)? 1 : -1) * sinf(angle.y) * targetDistance * sinf(angle.y) + target.y;
+    position.z =  - (cosf(angle.x) * targetDistance * cosf(angle.y) + target.z);
+
     forward = -glm::normalize(position - target);
     right = glm::normalize(glm::cross(forward, glm::vec3(0,1,0)));
     up =  glm::normalize(glm::cross(right, forward));
 }    
+
+void Camera::UpdateTargetDistance(i32 y){
+    if(!(targetDistance - y < 0)){
+        targetDistance -= y;   
+    }
+}
 
 
 glm::mat4 Camera::GetViewMatrix(){  

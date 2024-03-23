@@ -41,7 +41,7 @@ class EntityModel{
     std::vector<u32> indices;
     std::map<std::string, EntityModelData> modelData;
     Mesh mesh;
-    u8 intialized;
+    u8 intialized = 0;
     u32 meshCount = 0;
     
     void Generate();

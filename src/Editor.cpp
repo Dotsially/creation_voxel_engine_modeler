@@ -13,7 +13,7 @@
 #include "animator.h"
 #include "sekai_reader.h"
 
-void InputHandler(Window* gameWindow, const u8* keystate);
+void InputHandler(Window* gameWindow, const u8* keystate, Camera* camera);
 
 
 int main(int argc, char* args[]){
@@ -36,10 +36,11 @@ int main(int argc, char* args[]){
 
     Grid grid = Grid(16);
     
-    glm::fvec3 selectPosition = glm::vec3{0};
-    glm::fvec3 selectRotation = glm::vec3{0};
-    glm::fvec3 selectSize = glm::vec3{1};
-    glm::fvec3 selectPivot = glm::vec3{0};
+    glm::fvec3 selectPosition = glm::fvec3{0};
+    glm::fvec3 selectRotation = glm::fvec3{0};
+    glm::fvec3 selectSize = glm::fvec3{1};
+    glm::fvec3 selectPivot = glm::fvec3{0};
+    glm::fvec3 targetPosition = glm::fvec3{0};
 
     Node nodes;
     Animator animator = Animator(30, 60);
@@ -68,7 +69,7 @@ int main(int argc, char* args[]){
 
             ImGui::SameLine();
             if(ImGui::Button("Center")){
-                nodes.CenterCube();
+                nodes.CenterCube(&selectPivot);
             }
 
             if(ImGui::Button("Cube")){
@@ -90,9 +91,18 @@ int main(int argc, char* args[]){
 
         editorWindow.PollEvents();
         const u8* keystate = SDL_GetKeyboardState(NULL); 
-        InputHandler(&editorWindow, keystate);
+        InputHandler(&editorWindow, keystate, &viewport);
         
-        viewport.Update(keystate, glm::vec3{0,0,0});
+
+        if(keystate[SDL_SCANCODE_SPACE]){
+            targetPosition.y += 0.1f;
+        }
+        else if(keystate[SDL_SCANCODE_LSHIFT]){
+            targetPosition.y -= 0.1f;
+        }
+
+        viewport.Update(keystate, targetPosition);
+
 
         glm::mat4 perspective = viewport.GetProjectMatrix();
         glm::mat4 view = viewport.GetViewMatrix();
@@ -125,9 +135,14 @@ int main(int argc, char* args[]){
 }
 
 
-void InputHandler(Window* gameWindow, const u8* keystate){
+void InputHandler(Window* gameWindow, const u8* keystate, Camera* camera){
     SDL_Event e = gameWindow->GetEvent();
     ImGui_ImplSDL2_ProcessEvent(&e);
+
+    if(e.type == SDL_MOUSEWHEEL){
+        i32 y = e.wheel.y;
+        camera->UpdateTargetDistance(y);
+    }
 
     if(e.type == SDL_QUIT){
         gameWindow->Quit();
